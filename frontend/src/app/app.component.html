@@ -67,7 +67,7 @@
                 class="check"
                 [class.check-done]="todo.completed"
                 (click)="toggle(todo)"
-                [attr.aria-label]="(todo.completed ? 'Mark not done: ' : 'Mark done: ') + todo.title"
+                [attr.aria-label]="(todo.completed ? 'Mark not  done: ' : 'Mark done: ') + todo.title"
               >
                 @if (todo.completed) { ✓ }
               </button>
