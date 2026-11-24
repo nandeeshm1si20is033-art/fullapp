@@ -1,0 +1,7 @@
+{
+  "/api": {
+    "target": "https://backend-todo-y96f.onrender.com:10000/",
+    "secure": false,
+    "changeOrigin": false
+  }
+}

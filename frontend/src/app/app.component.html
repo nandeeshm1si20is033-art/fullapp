@@ -1,0 +1,105 @@
+<main class="page">
+  <div class="container">
+    <header class="header">
+      <div>
+        <p class="eyebrow">{{ today | date: 'EEEE, MMMM d' }}</p>
+        <h1 class="title">Inkwell</h1>
+      </div>
+      <div class="counter">
+        <p class="counter-number">{{ remaining() }}</p>
+        <p class="counter-label">left to do</p>
+      </div>
+    </header>
+
+    <form class="add-form" (ngSubmit)="add()">
+      <input
+        class="input"
+        name="draft"
+        [(ngModel)]="draft"
+        placeholder="What needs doing?"
+        aria-label="New task"
+        autocomplete="off"
+      />
+      <button class="btn-primary" type="submit" [disabled]="!draft.trim()">+ Add</button>
+    </form>
+
+    @if (error()) {
+      <p class="error" role="alert">{{ error() }}</p>
+    }
+
+    <div class="toolbar">
+      <div class="filters" role="tablist" aria-label="Filter tasks">
+        @for (f of filters; track f.value) {
+          <button
+            role="tab"
+            class="chip"
+            [class.chip-active]="filter() === f.value"
+            [attr.aria-selected]="filter() === f.value"
+            (click)="filter.set(f.value)"
+          >
+            {{ f.label }}
+          </button>
+        }
+      </div>
+      @if (doneCount() > 0) {
+        <button class="link-btn" (click)="clearCompleted()">Clear done ({{ doneCount() }})</button>
+      }
+    </div>
+
+    <section class="paper">
+      @if (loading()) {
+        <p class="empty">Loading…</p>
+      } @else if (visible().length === 0) {
+        <p class="empty">
+          @if (todos().length === 0) {
+            A blank page. Add your first task above.
+          } @else if (filter() === 'completed') {
+            Nothing ticked off yet.
+          } @else {
+            All done. Nice work.
+          }
+        </p>
+      } @else {
+        <ul>
+          @for (todo of visible(); track todo.id) {
+            <li class="row">
+              <button
+                class="check"
+                [class.check-done]="todo.completed"
+                (click)="toggle(todo)"
+                [attr.aria-label]="(todo.completed ? 'Mark not done: ' : 'Mark done: ') + todo.title"
+              >
+                @if (todo.completed) { ✓ }
+              </button>
+
+              @if (editingId() === todo.id) {
+                <input
+                  class="edit-input"
+                  name="edit"
+                  [(ngModel)]="editText"
+                  (blur)="commitEdit(todo)"
+                  (keydown.enter)="commitEdit(todo)"
+                  (keydown.escape)="cancelEdit()"
+                  aria-label="Edit task"
+                  appAutofocus
+                />
+              } @else {
+                <span
+                  class="todo-title"
+                  [class.done]="todo.completed"
+                  (dblclick)="startEdit(todo)"
+                  title="Double-click to edit"
+                  >{{ todo.title }}</span
+                >
+              }
+
+              <button class="delete" (click)="remove(todo)" [attr.aria-label]="'Delete ' + todo.title">×</button>
+            </li>
+          }
+        </ul>
+      }
+    </section>
+
+    <p class="hint">Double-click a task to edit it. Tasks are saved by the Spring Boot server.</p>
+  </div>
+</main>
